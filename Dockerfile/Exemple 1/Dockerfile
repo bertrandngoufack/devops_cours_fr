@@ -9,12 +9,12 @@ FROM ubuntu:latest
 # de votre conteneur
 ENV MA_VARIABLE "je suis une variable"
 
-# Grâce au "RUN" vous pouvez exécuter de véritable commande Shell à l'intérieur du conteneur
+# Grâce au "RUN" vous pouvez exécuter de véritables commandes Shell à l'intérieur du conteneur
 # au moment où il est buildé.
 # La commande ci-dessous installe le paquet nginx et le paquet curl
 RUN apt-get update && apt-get install nginx curl -y
 
-# Par défaut, aucuns ports TCP ou UDP n'est ouvert
+# Par défaut, aucun port TCP ou UDP n'est ouvert
 # La commande "EXPOSE" permet d'ouvrir les ports indiqués sur le conteneur
 # Attention, cela n'empêche pas d'utiliser l'option --publish pour rediriger ces ports
 # vers ceux de votre machine
