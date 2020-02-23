@@ -7,6 +7,6 @@ services:
   mon_nginx:
     image: nginx
     volumes:
-      - .:/usr/share/nginx/html
+      - $(pwd):/usr/share/nginx/html
     ports:
       - '80:80'

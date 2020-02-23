@@ -1,4 +1,0 @@
-docker-compose up -d
-
-#Remplacer ubuntu_db_1 par l'id du conteneur db
-docker exec -it ubuntu_db_1 mysql -uroot -p -e "CREATE USER 'root'@'%' IDENTIFIED BY 'passe';GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';FLUSH PRIVILEGES;"
