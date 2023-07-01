@@ -1,0 +1,343 @@
+• Sur Ubuntu :
+sudo apt-get remove docker docker-engine docker.io containerd runc
+
+Sur CentOS (pour Fedora remplacer yum par dnf)
+
+sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker- logrotate docker-engine
+
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+
+sh get-docker.sh
+
+sudo usermod -aG docker jassouline
+
+docker machine 
+
+Docker Machine est un outils permettant de déployer des hôtes docker sur différentes plateformes. 
+Cela permet aussi de crer des hôtes pour les clusters swarm dont on parlera plus tard
+
+Pour l’installer sur Linux exécutez les commandes :
+
+Docker Compose est un outil destiné à définir et exécuter des applications Docker à plusieurs conteneurs. Dans Compose, vous utilisez un fichier YAML pour configurer les services de votre application. Ensuite, vous créez 
+et vous démarrez tous les services à partir de votre configuration en utilisant une seule commande.
+
+Si vous souhaitez lancer la création de l'ensemble des conteneurs, vous devez lancer la commande docker-compose up (pour rappel, vous faites un docker run pour lancer un seul conteneur). 
+Vous pouvez ajouter l'argument -d pour faire tourner les conteneurs en tâche de fond.
+base=https://github.com/docker/machine/releases/download/v0.16.2 && curl -L $base/docker-machine-$(uname -s)-$(uname -m) >/tmp/docker-machine && sudo mv /tmp/docker-machine /usr/local/bin/docker-machine && chmod +x /usr/local/bin/docker-machine
+
+docker-machine version
+
+Installation de docker-composer
+
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.18.1/ docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+Lancer un conteneur type « serveur web » avec l’option publish
+• docker container run --publish 80:80 nginx
+
+Lancer un conteneur type « serveur web » avec l’option detach
+docker container run --publish 80:80 --detach nginx
+
+
+Lancer un conteneur type « serveur web » avec l’option detach
+
+docker container run --publish 80:80 --detach nginx
+
+===
+
+Lister les conteneurs sur notre serveur
+• docker container ls
+Liste les conteneurs qui sont actuellement en cours d'exécution
+• docker container ls -a
+Liste tous les conteneurs, y compris ceux qui ont été arrêtés
+
+
+Lancer un conteneur type « serveur web » avec l’option name
+
+• docker container run --publish 80:80 --detach –-name nginx_webserver nginx
+
+Arrêter un conteneur :
+• docker container stop <NAME/ID>
+• Permet d'arrêter un container (il ne sera donc visible que via la commande docker container ls –a)
+
+Supprimer des conteneurs
+• docker container rm <NAME> <NAME2> ...
+Permet de supprimer définitivement un container (ou une liste de containers)
+• Remarque : seuls les containers déjà stoppés peuvent être supprimés.
+
+
+docker container rm -f <NAME> <NAME2> ...
+• Permet de supprimer définitivement un container même si celui-ci n'a pas été stoppé au préalable grâce à l’option -f
+
+Afficher les logs d’un conteneur
+• docker container logs <NAME/ID>
+• L'option logs permet d’afficher les logs du conteneur indiqué soit par son ID, soit par son nom.
+
+Afficher le processus exécuté sur un conteneur
+• docker container top <NAME/ID>
+• L'option top permet d’afficher le processus qui est actuellement en cours d’exécution sur le conteneur.
+
+
+Utiliser plusieurs conteneurs en même temps
+• Lancez trois conteneurs : 
+nginx : Pour nginx :• docker container run --detach --publish 80:80 --name nginx_server nginx ,
+
+
+ mysql : Pour mysql :
+• docker container run --detach --publish 3306:3306 --name mysql_server --env MYSQL_RANDOM_ROOT_PASSWORD=yes mysql
+• docker container logs mysql_server
+
+
+
+ et httpd: Pour apache : • docker container run --detach --publish 8080:80 --name apache_server httpd
+
+Lorsque vous lancerez le conteneur mysql, utilisez l’option --env pour lui faire passer la variable : 
+MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+Utiliser la commande :
+docker container logs 
+sur mysql pour récupérer le mot de passe root qui a été généré aléatoirement.
+
+Terminez en utilisant les commandes docker container stop et docker container rm pour tout nettoyer.
+
+Afficher le processus exécuté sur un conteneur
+• docker container top <NAME/ID>
+
+Utiliser la commande « inspect»
+• docker container inspect <NAME>
+• Donne toutes les informations au format json à propos du container 
+(son adresse IP, les interfaces configurées, etc...)
+
+
+Utiliser la commande « stats »
+• docker container stats <NAME>
+• Affiche les statistiques concernant l'utilisation de la RAM, du CPU, etc...
+
+Utiliser l’option « it » pour interagir avec son conteneur
+• docker container run -it --name webserver --publish 80:80 nginx bash
+
+Exécuter une commande à l’intérieur de son conteneur avec « docker exec »
+• docker container exec -it -<NAME> bash
+
+
+Attention, par exemple sur l’image alpine, bash n’est pas disponible, et il faut plutôt utiliser sh
+
+---====
+Bonne pratique reseaux
+Les règles de bonnes pratiques
+• Il est commun de dire qu’il faut créer un nouveau réseau virtuel pour chaque application ou service.
+• Par exemple on pourra créer un réseau virtuel appelé « application_web » dans lequel se trouvera un conteneur mysql et un autre conteneur apache.
+• Si sur le même serveur physique, on a également une application python utilisant mongodb, on créera un autre réseau virtuel appelé « application_python » dans lequel se trouvera nos conteneurs python et mongodb
+
+Ce que l’on peut faire sur les conteneurs
+• On peut facilement créer de nouveaux réseaux virtuels (un pour chaque application)
+• Il est possible d’attacher un conteneur à plusieurs réseaux virtuels en même temps (voir à aucun)
+• On peut connecter directement le conteneur à la carte réseau de la machine physique et utiliser son IP
+
+docker container run --name webserver --detach nginx
+
+docker container run --name webserver2 --publish 80:80 --detach nginx
+
+docker container port webserver2
+
+docker container inspect webserver2
+
+La commande « docker container inspect »• docker container inspect –-format '{{.NetworkSettings.IPAddress}}' <NAME>
+
+docker network ls
+• Affiche les réseaux Docker qui existent, normalement, au démarrage vous devez en avoir trois: Bridge, Host et none
+
+
+docker network inspect <NETWORK_NAME>
+
+docker network inspect bridge
+
+docker network create <NETWORK_NAME>
+
+docker network create network_test
+
+docker network inspect network_test
+
+Le Driver par défaut auquel sera attaché le nouveau réseau est le bridge qui permet simplement de pouvoir attacher un sous-réseau au nouveau réseau créé
+
+docker container run --network <NETWORK_NAME> --name webserver nginx
+
+L’option network permet d’attacher le conteneur à un réseau  spécifique
+
+docker container run --network network_test --name webserver3 --detach nginx
+
+docker container run --network <NETWORK_NAME> --name webserver nginx
+
+La commande «docker network connect»
+• docker network connect <NETWORK_NAME> <CONTAINER_NAME>
+
+docker network connect network_test webserver
+
+La commande «docker network 
+disconnect»• docker network disconnect <NETWORK_NAME> <CONTAINER_NAME>
+• Permet détacher dynamiquement la NIC d'un conteneur.
+
+
+====
+
+La définition d’une image
+• Une image correspond aux fichiers binaires et aux dépendances, ainsi qu'aux métadonnées concernant la façon dont il faudra l'exécuter.
+
+Qu’est-ce que Docker Hub ?
+• Docker Hub est un dépôt sur le Cloud totalement géré par Docker.
+
+https://github.com/docker-library/official-images/tree/master/library
+
+
+La commande « docker image history »
+• docker image history <NAME/ID> ::docker image history mysql
+• Montre les différentes couches de modifications qui ont été  appliquées à l’image Docker
+
+La commande « docker image inspect »
+• docker image inspect <NAME/ID>
+• Retourne en format JSON les métadonnées correspondantes à 
+l’image inspectée
+• Ports exposés
+• ID de l’image
+• Variables d’environnement
+• Commande lancée au démarrage du conteneur
+
+
+==
+
+La commande « docker image tag »
+• docker image tag <SOURCE_IMAGE>:TAG <TARGET_IMAGE>:TAG
+docker image tag nginx:latest nginx_test:latest
+
+docker image tag nginx:latest ngoufack/nginx_test:latest  -- personalier sur son hub
+
+• Le TAG correspond à un pointeur vers un commit spécifique sur  une image
+• Le TAG « latest » correspond au tag par défaut
+
+
+La commande « docker image push »
+• docker image push <IMAGE_NAME>
+• Upload les modifications des couches de l’image vers Docker Hub par défaut (on peut changer le dépôt destination)
+• Attention à s’authentifier avec la commande « docker login » avant de push des images vers Docker Hub
+
+
+La commande « docker login »
+• docker login
+• Permet de s’authentifier auprès de Docker Hub (ou un autre dépôt)
+• On peut observer le fichier créé à partir de cette commande en 
+faisant un « cat .docker/config.json »
+
+
+La commande « docker logout »
+• docker logout
+• Permet de supprimer le fichier d’authentification créé à partir de la commande « docker login »
+
+
+Qu’est-ce qu’un Dockerfile ?
+• Les dockerfiles sont des fichiers textes décrivant les différentes étapes de création d’un conteneur totalement personnalisé.
+• Il existe des paramètres obligatoires et des paramètres optionnels.
+
+La commande « docker build »
+• docker image build –t <IMAGE_NAME>:<TAG> .
+docker image build –t test_image_buil:latest .
+
+• Vous devez vous trouver dans le répertoire contenant le fichier 
+Dockerfile pour exécuter la commande
+• L’option –t indique que l’image va être taguée
+• Attention à ne pas oublier le point à la fin de la commande
+
+La commande « docker volume prune »
+• docker volume prune
+• Permet de supprimer tous les volumes qui ne sont plus utilisés sur l’hôte Docker
+
+
+ La commande « docker image inspect »
+• docker image inspect mysql
+• Dans la partie « Config » puis « Volumes », on peut récupérer l’information concernant les volumes qui sont créés lors du démarrage d’un nouveau conteneur.
+• "Volumes": {
+• "/var/lib/mysql": {}
+• },
+
+
+
+La commande « docker container inspect
+»• docker container inspect mysql
+• Après avoir démarré un container mysql avec
+ « docker container run –d –e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql » on peut trouver l’information du type :
+
+
+La commande « docker volume ls »
+• docker volume ls
+• Permet de donner la liste des volumes actuels sur l’hôte Docker
+
+
+
+La commande « docker volume inspect »
+• docker volume inspect <VOLUME_NAME>
+• Donner des informations détaillées sur un ou plusieurs volumes
+
+
+
+La commande « docker container run »
+• docker container run –d –-name mysql –e MYSQL_ALLOW_EMPTY_PASSWORD=True –v mysql-db:/var/lib/mysql sql
+
+
+La commande « docker volume create »
+• docker volume create [OPTIONS] [NAME]
+• Permet de créer un volume docker.
+• Très utile pour pouvoir lui spécifier des options particulières, comme les options de driver grâce à l’option -o
+
+
+
+Les Bind Mounting dans Docker
+• Le BIND MOUNTING permet d’effectuer une association entre des fichiers ou des répertoires de la machine hôte, avec ceux d’un ou de plusieurs conteneurs.
+
+La syntaxe du Bind Mounting
+• Commande pour monter des volumes:
+• ... run –v mysql-db:/var/lib/mysql
+• Commande pour faire du Bind Mounting:
+• ... run –v /home/jassouline/mysql:/var/lib/mysql
+• Au lieu de spécifier juste un nom, on a besoin de spécifier le chemin absolu du fichier avant le « : »
+:
+• ... run –v //c/Users/Jordan/mysql:/var/lib/mysql
+• Voici la notation pour un système Windows
+
+
+Usage:  docker image COMMAND
+
+Manage images
+
+Commands:
+  build       Build an image from a Dockerfile
+  history     Show the history of an image
+  import      Import the contents from a tarball to create a filesystem image
+  inspect     Display detailed information on one or more images
+  load        Load an image from a tar archive or STDIN
+  ls          List images
+  prune       Remove unused images
+  pull        Download an image from a registry
+  push        Upload an image to a registry
+  rm          Remove one or more images
+  save        Save one or more images to a tar archive (streamed to STDOUT by default)
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+
+Déployer, manipuler et sécuriser un serveur Registry Docker privé
+Ce chapitre, vous explique l'utilité d'un registre Docker et vous apprend à déployer,
+ manipuler et sécuriser un serveur Registry Docker privé.
+
+
+ https://www.geeksforgeeks.org/remove-all-containers-and-images-in-docker/
+
+
+ Use -f option to specify the file name.
+
+Example:
+
+docker-compose -f wordpress.yml  up -d
+
+
+------
+
+
