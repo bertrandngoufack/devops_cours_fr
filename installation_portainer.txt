@@ -1,0 +1,106 @@
+Téléchargez l'image Docker de Portainer en utilisant la commande suivante :
+sudo docker pull portainer/portainer-ce
+====
+Step 3: Setup Portainer
+
+===
+
+Step 3: Setup Portainer
+Une fois l'image téléchargée, exécutez le conteneur Portainer en utilisant la commande suivante :
+
+sudo docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /applis/portainer_data:/data portainer/portainer-ce
+
+docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+
+docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /applis/portainer_data:/data portainer/portainer
+
+
+docker run -d --name docker-apache -p 9090:80 -d httpd
+
+
+====
+
+Ouvrez votre navigateur Web et accédez à l'URL suivante : http://localhost:9000
+
+root@ubuntulab:~# history
+    1  exit
+    2  ll
+    3  cd /var/
+    4  ll
+    5  exit
+    6  df -TH
+    7  fdisk -l
+    8  lvmdiskscan
+    9  echo "- - -" > /sys/class/scsi_host/host2/scan
+   10  fdisk -l
+   11  echo "- - -" >> /sys/class/scsi_host/host_$i/scan
+   12  echo "- - -" | sudo tee /sys/class/scsi_host/host*/scan >/dev/null
+   13  for host in /sys/class/scsi_host/*; do echo "- - -" | sudo tee $host/scan; ls /dev/sd* ; done     
+   14  fdisk -l
+   15  echo "- - -" > /sys/class/scsi_host/hostX/scan
+   16  echo "- - -" > /sys/class/scsi_host/host*/scan
+   17  for BUS in /sys/class/scsi_host/host*/scan; do    echo "- - -" >  ${BUS}; don
+   18  for BUS in /sys/class/scsi_host/host*/scan; do    echo "- - -" >  ${BUS}; done
+   19  fdisk -l
+   20  clear
+   21  fdisk -l
+   22  fdisk /dev/sdb
+   23  pvcreate /dev/sdb1
+   24  vgcreate appli_vg_lvm /dev/sdb1
+   25  pvdisplay /dev/sdb1
+   26  vgdisplay appli_vg_lvm
+   27  lvcreate -n appli_lv_lvm -L 4GB appli_vg_lvm
+   28  lvdisplay
+   29  mkfs.xfs /dev/appli_vg_lvm/appli_lv_lvm
+   30  mkdir /applis
+   31  mount /dev/appli_vg_lvm/appli_lv_lvm /applis
+   32  df -TH | grep appl
+
+   /dev/vg_lvm_appli/lv_lvm_appli /applis xfs  defaults 0 0
+
+------
+
+version: "2"
+
+services:
+   wordpress-db:
+     container_name: wordpress-db
+     image: mysql:5.7
+     volumes:
+       - /applis/docker/wordpress/db:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: Bateau123
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress_user
+       MYSQL_PASSWORD: Bateau123
+
+   wordpress:
+     container_name: wordpress
+     depends_on:
+       - wordpress-db
+     image: wordpress:latest
+     ports:
+       - 8088:80
+     restart: always
+     volumes:
+       - /applis/docker/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+       - /applis/docker/wordpress/html:/var/www/html
+     environment:
+       WORDPRESS_DB_HOST: wordpress-db:3306
+       WORDPRESS_DB_USER: wordpress_user
+       WORDPRESS_DB_PASSWORD: Bateau123
+       WORDPRESS_DB_NAME: wordpress
+
+   wordpress-pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: wordpress-pma
+    depends_on:
+        - wordpress-db
+    environment:
+        - PMA_HOST=wordpress-db
+        - PMA_PORT=3306
+        - PMA_ARBITRARY=1
+    #ports:
+    #    - 8001:80
+    restart: always
