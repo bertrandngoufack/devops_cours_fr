@@ -336,3 +336,50 @@ Ce chapitre, vous explique l'utilité d'un registre Docker et vous apprend à d�
 Example:
 
 docker-compose -f wordpress.yml  up -d
+
+
+
+====
+
+docker run -d -p 8080:8080 -p 50000:50000 -v portainer_data:/var/jenkins_home --name jenkins jenkins/jenkins:lts
+
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
+
+ec126e5bba674b33ad3c1ff32ef850ab
+
+oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee
+
+kcamada/oracle19.3.0-ee
+
+docker pull oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee
+
+docker run -d -p 1521:1521  -v portainer_data --name oracle oracledb19c/oracle.19.3.0-ee:oracle19.3.0-ee
+
+docker pull jenkins/jenkins
+
+docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=<votre_mot_de_passe> -v /chemin/vers/votre/repertoire/mariadb_volume:/var/lib/mysql --name mariadb mariadb:latest
+--
+docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Bateau123 -v portainer_data:/var/lib/mysql --name mariadb mariadb:latest
+
+
+docker run -d -p 8080:80 -e PMA_HOST=<adresse_ip_ou_nom_hote_mysql> -v /chemin/vers/votre/repertoire/phpmyadmin_volume:/sessions --name phpmyadmin phpmyadmin/phpmyadmin
+
+docker run -d -p 8282:80 -e PMA_HOST=172.17.0.4 -v portainer_data:/sessions --name phpmyadmin phpmyadmin/phpmyadmin
+
+modifier config.user.inc.php sur phpmyadmin docker
+
+docker ps
+docker exec -it phpmyadmin /bin/bash
+cd /var/www/html
+vi config.user.inc.php
+
+Ajoutez les lignes suivantes au fichier pour autoriser l'accès distant :
+
+$cfg['AllowArbitraryServer'] = true;
+$cfg['AllowRoot'] = true;
+$cfg['AllowNoPassword'] = true;
+
+
+
+
