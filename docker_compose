@@ -1,0 +1,126 @@
+version: "3"
+services:
+  traefik:
+    image: traefik
+    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+    networks:
+      - webgateway
+
+networks:
+  webgateway:
+    driver: bridge
+
+
+===============
+
+version: '3.9'
+
+services:
+  # Service MySQL
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    ports:
+      - "9306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: your_mysql_root_password
+      MYSQL_DATABASE: your_database_name
+      MYSQL_USER: your_database_user
+      MYSQL_PASSWORD: your_database_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - webgateway
+
+  # Service Apache/PHP
+  web:
+    image: php:7.4-apache
+    container_name: apache_php
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "9380:80"
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - webgateway
+
+volumes:
+  db_data:
+
+  ========
+
+
+  version: '3.9'
+
+services:
+  # Service MySQL
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    ports:
+      - "9306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Bateau123
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    volumes:
+      - /applis/docker_composer/db_data:/var/lib/mysql
+
+  # Service Apache/PHP
+  web:
+    image: php:7.4-apache
+    container_name: apache_php
+    build:
+      context: .
+      dockerfile: /applis/docker_composer/dockerfile
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "9380:80"
+    volumes:
+      - /applis/docker_composer/html:/var/www/html
+      -/applis/docker_composer/html/php-config/:/usr/local/etc/php/conf.d
+
+networks:
+  webgateway:
+    driver: bridge
+
+
+
+    docker run -it php:7.4-apache /bin/sh
+
+    docker exec -it 14a5476430f3 bash 
+
+    https://stackoverflow.com/questions/46879196/mysqli-not-found-dockerized-php
+
+  $ docker commit -p <phpcontainerid> <new or same image name>
+
+  $ docker commit -p 14a5476430f3
+
+
+  docker-compose -f docker-compose_apache.yml up --build -d
+
+
+  https://www.section.io/engineering-education/dockerized-php-apache-and-mysql-container-development-environment/
+
+   $ docker run --entrypoint /bin/bash -it <image>
+
+
+   https://blog.eleven-labs.com/fr/utiliser-traefik-comme-reverse-proxy/
+
+   traefik docker ...
+
+

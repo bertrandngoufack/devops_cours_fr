@@ -1,0 +1,56 @@
+Un pod est l'unité de base dans Kubernetes et représente un ou plusieurs conteneurs fonctionnant ensemble sur un même hôte. Voici la définition d'un pod dans Kubernetes avec un exemple :
+
+Définition d'un pod :
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mon-pod
+  labels:
+    app: mon-app
+spec:
+  containers:
+    - name: mon-conteneur
+      image: mon-image:latest
+      ports:
+        - containerPort: 8080
+```
+
+Explication :
+- `apiVersion: v1` spécifie la version de l'API Kubernetes utilisée pour ce pod.
+- `kind: Pod` indique qu'il s'agit d'une définition de pod.
+- `metadata` contient des informations sur le pod, telles que son nom et ses labels.
+- `spec` contient la spécification du pod, y compris les conteneurs à exécuter à l'intérieur du pod.
+- `containers` est une liste de conteneurs s'exécutant dans le pod. Dans cet exemple, il y a un seul conteneur nommé "mon-conteneur".
+- `name` est le nom du conteneur.
+- `image` spécifie l'image Docker à utiliser pour le conteneur.
+- `ports` définit les ports du conteneur qui doivent être exposés. Dans cet exemple, le conteneur écoute sur le port 8080.
+
+Cet exemple crée un pod nommé "mon-pod" avec un seul conteneur "mon-conteneur" basé sur l'image "mon-image:latest". Le conteneur écoute sur le port 8080.
+
+Vous pouvez utiliser la commande `kubectl apply -f <fichier.yaml>` pour créer ce pod à partir de ce fichier de définition YAML.
+
+
+
+
+Bien sûr ! Voici quelques commandes courantes utilisées avec Kubernetes, accompagnées de leurs explications :
+
+1. `kubectl get pods` : Cette commande affiche la liste des pods en cours d'exécution dans le cluster Kubernetes. Les pods sont les unités de base de déploiement dans Kubernetes.
+
+2. `kubectl create deployment <nom-du-déploiement> --image=<nom-de-l-image>` : Cette commande crée un déploiement à partir d'une image Docker spécifiée. Un déploiement est une ressource Kubernetes qui gère le cycle de vie des pods.
+
+3. `kubectl scale deployment <nom-du-déploiement> --replicas=<nombre-de-réplicas>` : Cette commande permet de modifier le nombre de réplicas (instances) d'un déploiement en cours d'exécution. Cela permet de mettre à l'échelle horizontalement l'application en ajoutant ou en supprimant des instances.
+
+4. `kubectl expose deployment <nom-du-déploiement> --port=<port-externe> --target-port=<port-interne>` : Cette commande expose un déploiement en tant que service. Le service permet d'accéder aux pods à l'intérieur du cluster Kubernetes.
+
+5. `kubectl get services` : Cette commande affiche la liste des services exposés dans le cluster Kubernetes, avec leurs adresses IP et ports associés.
+
+6. `kubectl describe <nom-de-la-ressource>` : Cette commande affiche des informations détaillées sur une ressource spécifique dans le cluster. Par exemple, `kubectl describe pod <nom-du-pod>` affiche des informations sur un pod spécifique.
+
+7. `kubectl logs <nom-du-pod>` : Cette commande affiche les journaux (logs) d'un pod spécifique. Cela peut être utile pour le débogage et la surveillance des applications.
+
+8. `kubectl exec -it <nom-du-pod> -- <commande>` : Cette commande exécute une commande à l'intérieur d'un pod. Par exemple, `kubectl exec -it <nom-du-pod> -- /bin/bash` ouvre un shell interactif à l'intérieur du pod.
+
+9. `kubectl delete <nom-de-la-ressource>` : Cette commande supprime une ressource spécifique dans le cluster. Par exemple, `kubectl delete pod <nom-du-pod>` supprime un pod spécifique.
+
+Ces commandes sont quelques exemples parmi de nombreuses autres commandes disponibles dans Kubernetes. Elles vous aideront à effectuer des opérations courantes de gestion et de surveillance de vos déploiements, pods et services Kubernetes.
