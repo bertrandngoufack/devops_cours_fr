@@ -336,3 +336,21 @@ Ce chapitre, vous explique l'utilité d'un registre Docker et vous apprend à d�
 Example:
 
 docker-compose -f wordpress.yml  up -d
+
+sudo docker exec –it 09c1b0f7a208 /bin/bash
+
+docker exec -it 09c1b0f7a208 /bin/bash
+
+docker exec -it <running_container_name_or_id> \bin\bash
+
+docker exec -it 46fd49b98037 \bin\bash
+
+
+5bb0e6e9bba1f6f6409ed3b6a0cc423cbcd51a6610eecc9110d3cffc5ee08e98
+
+docker exec -it 5bb0e6e9bba1 bash
+
+
+jenkins@5bb0e6e9bba1:/$ cat var/jenkins_home/secrets/initialAdminPassword
+
+9698cca0e2194e9da2866a44bfb05db5

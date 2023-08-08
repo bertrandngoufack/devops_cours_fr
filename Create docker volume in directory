@@ -1,0 +1,13 @@
+There is no option out of the box to define directory when creating docker volume. Docker volumes are docker managed and supposed to be isolated from the host operating system interventions. The straightforward answer is to use mount directories if the files are completely managed by you (the host os). If you are dealing with persistent data generated/used by the containers then use docker volumes. This advice comes from docker docs
+
+However if you are insistent on using docker volume that is in defined folder instead of default docker volume directory then this stackexchange post couple of options summarised below;
+
+Use local-persist plugin
+sudo docker volume create -d local-persist -o mountpoint=/mnt/ --name=extra-addons
+
+Use symnlinks
+docker volume create test mkdir /mnt/test sudo rm -rf /var/lib/docker/volumes/<volume>/_data sudo ln -s /mnt/<myVolume> /var/lib/docker/volumes/<volume>/_data
+
+I personally wouldn't bother with either of them. 
+The advice on docker docs is pretty clear as it can get.
+ If the files are managed by you then use mounted volume or if the files are managed by the container then use docker volume.
