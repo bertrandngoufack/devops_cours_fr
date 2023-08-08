@@ -341,7 +341,7 @@ docker-compose -f wordpress.yml  up -d
 
 ====
 
-docker run -d -p 8080:8080 -p 50000:50000 -v portainer_data:/var/jenkins_home --name jenkins jenkins/jenkins:lts
+docker run -d -p 8080:8080 -p 50000:50000 -v /applis/docker:/var/jenkins_home --name jenkins jenkins/jenkins:lts
 
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
