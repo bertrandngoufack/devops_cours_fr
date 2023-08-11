@@ -354,3 +354,5 @@ docker exec -it 5bb0e6e9bba1 bash
 jenkins@5bb0e6e9bba1:/$ cat var/jenkins_home/secrets/initialAdminPassword
 
 9698cca0e2194e9da2866a44bfb05db5
+
+https://www.middlewareinventory.com/blog/docker-tomcat-example-dockerfile-sample/
