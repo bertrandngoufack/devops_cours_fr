@@ -54,3 +54,47 @@ Bien sûr ! Voici quelques commandes courantes utilisées avec Kubernetes, accom
 9. `kubectl delete <nom-de-la-ressource>` : Cette commande supprime une ressource spécifique dans le cluster. Par exemple, `kubectl delete pod <nom-du-pod>` supprime un pod spécifique.
 
 Ces commandes sont quelques exemples parmi de nombreuses autres commandes disponibles dans Kubernetes. Elles vous aideront à effectuer des opérations courantes de gestion et de surveillance de vos déploiements, pods et services Kubernetes.
+
+vi /etc/apk/repositories
+/media/cdrom/apks
+http://dl-cdn.alpinelinux.org/alpine/v3.18/main
+http://dl-cdn.alpinelinux.org/alpine/v3.18/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+http://dl-cdn.alpinelinux.org/alpine/edge/community/
+http://dl-cdn.alpinelinux.org/alpine/v3.17/main
+http://dl-cdn.alpinelinux.org/alpine/v3.17/community
+#http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+
+
+sudo apk del containerd
+
+sudo rm -rf /etc/containerd /var/lib/container
+
+sudo service containerd status
+
+sudo service containerd start
+
+kubeadm join 10.2.2.135:6443 --token nmynvt.cmovw3l4lb543mcj \
+        --discovery-token-ca-cert-hash sha256:2a44866f9db19b5562ad691cc19b230a937d41bead601a4f0a912aaaaee14855
+
+
+  The br_netfilter module is required for kubernetes installation. Enable this kernel module so that the packets traversing the bridge are processed by iptables for filtering and for port forwarding, and the kubernetes pods across the cluster can communicate with each other.
+
+Run the command below to enable the br_netfilter kernel module.
+
+#modprobe br_netfilter
+
+
+#echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables  
+or
+
+#nano /proc/sys/net/ipv4/ip_forward
+
+you should see 0 delete 0 and write 1 
+
+kubeadm join 10.2.2.139:6443 --token ijdzyj.ggcxaf3ej1st5t1w \
+        --discovery-token-ca-cert-hash sha256:71c4dfe2c62dcfd41dcabc18d65429b53d15f17f460acf4fdc170794bfd200c2
+
+
