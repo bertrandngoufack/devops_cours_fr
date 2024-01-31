@@ -18,6 +18,12 @@ docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v dat
 
 docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v data:/data portainer/portainer
 
+sudo docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /applis/docker/portainer_data:/data portainer/portainer-ce
+
+
+docker run -d -p 8080:8080 -p 50000:50000 -v /applis/docker/portainer_data:/var/jenkins_home --name jenkins jenkins/jenkins:lts
+
+docker run -d -p 8080:8080 -p 50000:50000 -v /applis/docker/jenkins:/var/jenkins_home --name jenkins jenkins/jenkins:lts
 
 
 
@@ -120,3 +126,124 @@ services:
     -v /applis/docker/:/var/lib/docker/plugin-data/ \
     -v /applis/docker/data/volume/:/applis/docker/data/volume/ \
         cwspear/docker-local-persist-volume-plugin
+
+
+
+html --- index
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire d'inscription</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h2>Inscription</h2>
+    <form method="post" action="inscription.php">
+      <div class="form-group">
+        <label for="inputEmail">Adresse email</label>
+        <input type="email" class="form-control" id="inputEmail" name="email" aria-describedby="emailHelp" placeholder="Entrez votre email" required>
+        <small id="emailHelp" class="form-text text-muted">Votre email ne sera partagé avec personne.</small>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword">Mot de passe</label>
+        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Entrez votre mot de passe" required>
+      </div>
+      <button type="submit" class="btn btn-primary">S'inscrire</button>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+--- php inscription.php
+
+
+<?php
+// Récupération des données du formulaire
+$email = $_POST['email'];
+$password = $_POST['password'];
+
+// Connexion à la base de données
+$servername = "db";
+$username = "example_user";
+$dbpassword = "example_password";
+$dbname = "mon_application_db";
+
+$conn = new mysqli($servername, $username, $dbpassword, $dbname);
+
+// Vérification de la connexion
+if ($conn->connect_error) {
+  die("La connexion a échoué : " . $conn->connect_error);
+}
+
+// Requête SQL pour insérer les données
+$sql = "INSERT INTO utilisateurs (email, mot_de_passe) VALUES ('$email', '$password')";
+
+if ($conn->query($sql) === TRUE) {
+  echo "Nouvel enregistrement créé avec succès";
+} else {
+  echo "Erreur : " . $sql . "<br>" . $conn->error;
+}
+
+// Fermeture de la connexion à la base de données
+$conn->close();
+?>
+
+docker_compose YAML
+
+version: '3'
+services:
+  web:
+    image: php:apache
+    ports:
+      - "80:80"
+    volumes:
+      - ./site:/var/www/html
+  
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mon_application_db
+      MYSQL_USER: example_user
+      MYSQL_PASSWORD: example_password
+    volumes:
+      - db_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: example
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
