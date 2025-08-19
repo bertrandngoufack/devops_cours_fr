@@ -1,0 +1,277 @@
+services:
+  database:
+    image: 'postgres:latest'
+    ports:
+      - 15432:5432
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - /home/ngoufack_b/database/postgresql/data/db-data/:/var/lib/postgresql/data/
+      - /home/ngoufack_b/database/postgresql/data/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 15433:8090
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - postgres-network
+    volumes:
+      - /home/ngoufack_b/database/postgresql/datapgadmin-data/:/var/lib/pgadmin/
+
+networks: 
+  postgres-network:
+    driver: bridge
+
+
+----
+
+/home/ngoufack_b/database/postgresql/data
+
+
+---
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "15432:5432"
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    ports:
+      - "15433:80"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped
+
+networks: 
+  postgres-network:
+    driver: bridge
+
+
+---- 
+PostgreSQL sur localhost:15432
+
+pgAdmin sur http://localhost:15433 avec les identifiants spécifiés dans .env
+
+docker-compose -f docker-compose-postgresql.yml up -d
+
+mkdir -p pgadmin-data pgadmin-sessions
+chmod -R 775 pgadmin-data pgadmin-sessions
+
+----
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "15432:5432"
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    user: "1000:50"  # Ajout de l'utilisateur avec les permissions appropriées
+    ports:
+      - "15433:80"
+    env_file:
+      - .env
+    environment:
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin-sessions:/var/lib/pgadmin/sessions  # Volume spécifique pour les sessions
+    restart: unless-stopped
+
+networks: 
+  postgres-network:
+    driver: bridge
+
+
+----
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "15432:5432"
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    user: root
+    ports:
+      - "15433:80"
+    env_file:
+      - .env
+    environment:
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin-sessions:/var/lib/pgadmin/sessions
+      - ./pgadmin-logs:/var/log/pgadmin
+    restart: unless-stopped
+
+networks: 
+  postgres-network:
+    driver: bridge
+
+
+---
+Acces from tailscale:
+
+100.69.65.33:15433
+
+
+
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "0.0.0.0:15432:5432"  # Écoute sur toutes les interfaces
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf  # Fichier de config personnalisé
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    restart: unless-stopped
+
+
+Créez un fichier postgresql.conf dans le même répertoire avec :
+
+conf:
+
+listen_addresses = '*'  # Écoute sur toutes les interfaces
+max_connections = 100
+shared_buffers = 128MB
+
+
+3. Configurez pg_hba.conf (pour l'authentification)
+Créez un fichier pg_hba.conf dans le même répertoire :
+
+conf:
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+host    all             all             0.0.0.0/0               md5
+host    all             all             ::/0                    md5
+
+
+
+Ajoutez le volume dans docker-compose.yml :
+
+conf
+volumes:
+  - ./db-data:/var/lib/postgresql/data
+  - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  - ./postgresql.conf:/etc/postgresql/postgresql.conf
+  - ./pg_hba.conf:/etc/postgresql/pg_hba.conf  # Ajoutez cette ligne
+
+
+  version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "15432:5432"
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    user: root
+    ports:
+      - "15433:80"
+    env_file:
+      - .env
+    environment:
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin-sessions:/var/lib/pgadmin/sessions
+      - ./pgadmin-logs:/var/log/pgadmin
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+    restart: unless-stopped
+
+networks: 
+  postgres-network:
+    driver: bridge
