@@ -1,0 +1,1 @@
+<?php echo "🧪 Test PostgreSQL...\n"; if (extension_loaded("pgsql")) { echo "✅ Extension pgsql installée\n"; } else { echo "❌ Extension pgsql manquante\n"; } if (extension_loaded("pdo_pgsql")) { echo "✅ Extension pdo_pgsql installée\n"; } else { echo "❌ Extension pdo_pgsql manquante\n"; } ?>
